@@ -43,6 +43,9 @@ func setup() error {
 	if err != nil {
 		return fmt.Errorf("failed to connect to db: %w", err)
 	}
+	if db == nil {
+		return fmt.Errorf("the database connection is nil somehow")
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

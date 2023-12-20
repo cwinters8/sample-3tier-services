@@ -10,7 +10,7 @@ variable "web_image_tag" {
 
 variable "app_name" {
   type    = string
-  default = "3tier-app"
+  default = "3tier"
 }
 
 variable "api_port" {
@@ -49,7 +49,7 @@ variable "api_tags" {
     component = string
   })
   default = {
-    Name      = "3tier-app-api"
+    Name      = "3tier-api"
     component = "api"
   }
 }
@@ -60,7 +60,7 @@ variable "web_tags" {
     component = string
   })
   default = {
-    Name      = "3tier-app-web"
+    Name      = "3tier-web"
     component = "web"
   }
 }
@@ -70,7 +70,7 @@ variable "public_tags" {
     Name = string
   })
   default = {
-    Name = "3tier-app-public"
+    Name = "3tier-public"
   }
 }
 
@@ -79,11 +79,11 @@ variable "logging_tags" {
     Name = string
   })
   default = {
-    Name = "3tier-app-logs"
+    Name = "3tier-logs"
   }
 }
 
 variable "db_name" {
   type    = string
-  default = "pg-3tier-app-db"
+  default = "pg-3tier-db"
 }

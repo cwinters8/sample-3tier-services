@@ -41,7 +41,7 @@ Create an S3 bucket if you don't already have one to use for this purpose. Ideal
 You must also update the `terraform.backend.s3.bucket` value in [providers.tf](./providers.tf) with your chosen bucket name.
 
 ```sh
-BUCKET_NAME="3tier-app-services-infra"
+BUCKET_NAME="3tier-services-infra"
 aws s3 mb s3://$BUCKET_NAME
 # enables versioning
 aws s3api put-bucket-versioning --bucket $BUCKET_NAME --versioning-configuration Status=Enabled
@@ -68,7 +68,7 @@ The table must have a partition key named `LockID` with type of `String`.
 The table name must be unique within the AWS account's region. The `terraform.backend.s3.dynamodb_table` value in [providers.tf](./providers.tf) must also be updated with your chosen table name.
 
 ```sh
-TABLE_NAME="3tier-app-services-infra"
+TABLE_NAME="3tier-services-infra"
 aws dynamodb create-table --table-name $TABLE_NAME \
 --attribute-definitions AttributeName=LockID,AttributeType=S \
 --key-schema AttributeName=LockID,KeyType=HASH \
@@ -86,7 +86,7 @@ Expected output
         "AttributeType": "S"
       }
     ],
-    "TableName": "3tier-app-services-infra",
+    "TableName": "3tier-services-infra",
     "KeySchema": [
       {
         "AttributeName": "LockID",
@@ -102,7 +102,7 @@ Expected output
     },
     "TableSizeBytes": 0,
     "ItemCount": 0,
-    "TableArn": "arn:aws:dynamodb:us-east-2:773669924601:table/3tier-app-services-infra",
+    "TableArn": "arn:aws:dynamodb:us-east-2:773669924601:table/3tier-services-infra",
     "TableId": "d23fdb0a-4202-489a-9e84-14b87a439f47",
     "BillingModeSummary": {
       "BillingMode": "PAY_PER_REQUEST"
@@ -129,7 +129,7 @@ Expected output, showing table status `ACTIVE`
         "AttributeType": "S"
       }
     ],
-    "TableName": "3tier-app-services-infra",
+    "TableName": "3tier-services-infra",
     "KeySchema": [
       {
         "AttributeName": "LockID",
@@ -145,7 +145,7 @@ Expected output, showing table status `ACTIVE`
     },
     "TableSizeBytes": 0,
     "ItemCount": 0,
-    "TableArn": "arn:aws:dynamodb:us-east-2:773669924601:table/3tier-app-services-infra",
+    "TableArn": "arn:aws:dynamodb:us-east-2:773669924601:table/3tier-services-infra",
     "TableId": "d23fdb0a-4202-489a-9e84-14b87a439f47",
     "BillingModeSummary": {
       "BillingMode": "PAY_PER_REQUEST",

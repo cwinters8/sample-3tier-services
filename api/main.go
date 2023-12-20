@@ -38,7 +38,6 @@ func setup() error {
 		"postgresql://%s:%s@%s:%s/%s",
 		env[userKey], env[passKey], env[hostKey], env[portKey], env[nameKey],
 	)
-	fmt.Printf("database url: %s\n", dbURL)
 	db, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
 		return fmt.Errorf("failed to connect to db: %w", err)

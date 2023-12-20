@@ -2,8 +2,8 @@ name: Deploy app services
 on:
   push:
     branches:
-      # - disabled # change this to main or another primary branch to enable the workflow
-      - main
+      - disabled # change this to main or another primary branch to enable the workflow
+      # - main
 
 jobs:
   deploy:

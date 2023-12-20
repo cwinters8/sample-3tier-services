@@ -60,6 +60,8 @@ resource "aws_ecs_service" "web" {
   }
 
   tags = var.web_tags
+
+  depends_on = [aws_lb.web]
 }
 
 resource "aws_ecs_task_definition" "web" {

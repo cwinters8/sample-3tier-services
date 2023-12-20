@@ -68,6 +68,8 @@ resource "aws_ecs_service" "api" {
   }
 
   tags = var.api_tags
+
+  depends_on = [aws_lb.api]
 }
 
 resource "aws_ecs_task_definition" "api" {
@@ -96,6 +98,9 @@ resource "aws_ecs_task_definition" "api" {
       }, {
       name  = "DB_NAME"
       value = "pg3tier"
+      }, {
+      name  = "PORT",
+      value = tostring(var.api_port)
     }]
     logConfiguration = {
       logDriver = "awslogs"

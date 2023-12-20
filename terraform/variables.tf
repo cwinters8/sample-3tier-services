@@ -35,7 +35,7 @@ variable "web_service_name" {
 
 variable "api_default_url_path" {
   type    = string
-  default = "/api/status"
+  default = "/"
 }
 
 variable "domain" {

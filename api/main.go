@@ -23,18 +23,23 @@ func getTimestamp(ctx context.Context, db *pgx.Conn) (time.Time, error) {
 
 func setup() error {
 	ctx := context.Background()
-	dbCfg, err := pgx.ParseConfig(fmt.Sprintf(
-		"postgres://%s@%s:%s/%s",
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_NAME"),
-	))
+	var (
+		userKey = "DB_USER"
+		passKey = "DB_PASS"
+		hostKey = "DB_HOST"
+		portKey = "DB_PORT"
+		nameKey = "DB_NAME"
+	)
+	env, err := getEnv(userKey, passKey, hostKey, portKey, nameKey)
 	if err != nil {
-		return fmt.Errorf("failed to parse db config: %w", err)
+		return err
 	}
-	dbCfg.Password = os.Getenv("DB_PASS")
-	db, err := pgx.ConnectConfig(ctx, dbCfg)
+	dbURL := fmt.Sprintf(
+		"postgresql://%s:%s@%s:%s/%s",
+		env[userKey], env[passKey], env[hostKey], env[portKey], env[nameKey],
+	)
+	fmt.Printf("database url: %s\n", dbURL)
+	db, err := pgx.Connect(ctx, dbURL)
 	if err != nil {
 		return fmt.Errorf("failed to connect to db: %w", err)
 	}
@@ -66,4 +71,21 @@ func main() {
 	if err := setup(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func getEnv(keys ...string) (map[string]string, error) {
+	result := map[string]string{}
+	missing := []string{}
+	for _, key := range keys {
+		value := os.Getenv(key)
+		if len(value) == 0 {
+			missing = append(missing, key)
+		} else {
+			result[key] = value
+		}
+	}
+	if len(missing) > 0 {
+		return nil, fmt.Errorf("missing environment variables: %v", missing)
+	}
+	return result, nil
 }

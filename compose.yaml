@@ -1,0 +1,55 @@
+# for local testing of the entire stack
+services:
+  web:
+    build: ./web
+    container_name: 3tier-web
+    environment:
+      - API_HOST=http://api:${API_PORT}
+      - PORT=${WEB_PORT}
+    ports:
+      - 3001:${WEB_PORT}
+    healthcheck:
+      test: "wget --no-verbose --spider localhost:${WEB_PORT}/"
+      interval: 30s
+      timeout: 5s
+      start_period: 5s
+      retries: 3
+    depends_on:
+      - api
+  api:
+    build: ./api
+    container_name: 3tier-api
+    environment:
+      - DB_PASS=${DB_PASS}
+      - DB_HOST=db
+      - PORT=${API_PORT}
+    ports:
+      - 8081:8080
+    healthcheck:
+      test: "wget --no-verbose --spider localhost:${API_PORT}/api/status"
+      interval: 5s
+      timeout: 5s
+      start_period: 5s
+      retries: 3
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+  db:
+    image: postgres:15-alpine
+    container_name: 3tier-db
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_USER=app
+      - POSTGRES_DB=3tier
+      - PGDATA=/data/pgdata
+    volumes:
+      - pgdata:/data
+    healthcheck:
+      test: "pg_isready -h localhost"
+      interval: 30s
+      timeout: 5s
+      start_period: 5s
+      retries: 3
+volumes:
+  pgdata:

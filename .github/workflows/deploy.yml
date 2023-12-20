@@ -1,0 +1,41 @@
+name: Deploy app services
+on:
+  push:
+    branches:
+      - disabled # change this to main or another primary branch to enable the workflow
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: us-east-2
+      ECR_API_REPO: 3tier-api
+      ECR_WEB_REPO: 3tier-web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Get short git revision for image tag
+        id: tag
+        run: echo "TAG=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_OUTPUT
+      - name: Login to ECR registry
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Build and push API image
+        env:
+          IMAGE_TAG: "${{ steps.ecr.outputs.registry }}/${{ env.ECR_API_REPO }}:${{ steps.tag.outputs.TAG }}"
+        run: docker build api -t ${{ env.IMAGE_TAG }} && docker push ${{ env.IMAGE_TAG }}
+      - name: Build and push web image
+        env:
+          IMAGE_TAG: "${{ steps.ecr.outputs.registry }}/${{ env.ECR_WEB_REPO }}:${{ steps.tag.outputs.TAG }}"
+        run: docker build web -t ${{ env.IMAGE_TAG }} && docker push ${{ env.IMAGE_TAG }}
+      - name: Apply terraform
+        env:
+          TF_VAR_api_image_tag: ${{ steps.tag.outputs.TAG }}
+          TF_VAR_web_image_tag: ${{ steps.tag.outputs.TAG }}
+          TF_INPUT: 0
+        working-directory: terraform
+        run: |
+          terraform init -lockfile=readonly
+          terraform apply -auto-approve

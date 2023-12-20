@@ -9,10 +9,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func getTimestamp(ctx context.Context, db *pgx.Conn) (time.Time, error) {
+func getTimestamp(ctx context.Context, db *pgxpool.Pool) (time.Time, error) {
 	var t time.Time
 	row := db.QueryRow(ctx, `SELECT now() AS time`)
 	if err := row.Scan(&t); err != nil {
@@ -39,7 +39,7 @@ func setup() error {
 		env[userKey], env[passKey], env[hostKey], env[portKey], env[nameKey],
 	)
 	fmt.Printf("database url: %s\n", dbURL)
-	db, err := pgx.Connect(ctx, dbURL)
+	db, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
 		return fmt.Errorf("failed to connect to db: %w", err)
 	}
@@ -51,6 +51,7 @@ func setup() error {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if db == nil {
 			http.Error(w, "the database connection is nil somehow", http.StatusInternalServerError)
+			return
 		}
 		t, err := getTimestamp(ctx, db)
 		if err != nil {

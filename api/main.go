@@ -49,6 +49,9 @@ func setup() error {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if db == nil {
+			http.Error(w, "the database connection is nil somehow", http.StatusInternalServerError)
+		}
 		t, err := getTimestamp(ctx, db)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -58,11 +58,13 @@ func setup() error {
 			return
 		}
 		msg, err := json.Marshal(struct {
-			Message   string    `json:"message"`
-			Timestamp time.Time `json:"timestamp"`
+			Message       string    `json:"message"`
+			Timestamp     time.Time `json:"timestamp"`
+			DesiredStatus string    `json:"DesiredStatus"`
 		}{
-			Message:   "Hello, world!",
-			Timestamp: t,
+			Message:       "Hello, world!",
+			Timestamp:     t,
+			DesiredStatus: "RUNNING",
 		})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
